@@ -21,8 +21,8 @@ jobs:
       
       - name: Build Docker image
         run: |
-          lowercase_image_name=${echo "${{ env.IMAGE_NAME }}" | tr '[:upper:]' '[:lower:]'}
-          docker build . --file Dockerfile --tag ${{lowercase_image_name}}
+          LOWERCASE_IMAGE_NAME=${echo "${{ env.IMAGE_NAME }}" | tr '[:upper:]' '[:lower:]'}
+          docker build . --file Dockerfile --tag ${{LOWERCASE_IMAGE_NAME}}
       
       - name: Save Docker image
         run: |
