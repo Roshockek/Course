@@ -8,12 +8,48 @@ on:
 
 jobs:
 
-  build:
-
-    runs-on: self-hosted
+  build_deploy_run:
+    runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
-    - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag my-image-name:$(date +%s)
-           docker run --name test -p 8082:80 -d my-image-name:$(date +%s)
+      - name: Checkout code
+        uses: actions/checkout@v2
+      
+      - name: Build Docker image
+        run: |
+          IMAGE_NAME=$GITHUB_REPOSITORY
+          docker build . --file Dockerfile --tag $IMAGE_NAME
+      
+      - name: Save Docker image
+        run: |
+          IMAGE_NAME=$GITHUB_REPOSITORY
+          docker save $IMAGE_NAME --output "${IMAGE_NAME}.tar"
+      
+      - name: Upload artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: docker-image
+          path: "${GITHUB_REPOSITORY}.tar"
+          
+      - name: Login to Docker Hub
+        run: echo ${{ secrets.DOCKERHUB_PASSWORD }} | docker login --username ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
+
+      - name: Load Docker image
+        run: |
+          IMAGE_NAME=$GITHUB_REPOSITORY
+          docker load --input "${IMAGE_NAME}.tar"
+
+      - name: Set version
+        run: |
+          VERSION="prod-0.1.${GITHUB_RUN_NUMBER}"
+
+      - name: Set image name
+        run: |
+          IMAGE=${{ secrets.DOCKERHUB_NAMESPACE }}/$GITHUB_REPOSITORY
+
+      - name: Tag Docker image
+        run: docker tag $GITHUB_REPOSITORY $IMAGE:$VERSION
+
+      - name: Push Docker image
+        run: docker push $IMAGE:$VERSION
+
