@@ -31,8 +31,12 @@ jobs:
         with:
           context: .
           push: true
-          tags: roshochek/app:latest
-        env: 
-          LOWERCASE_IMAGE_NAME: ${echo "${{ env.IMAGE_NAME }}" | tr '[:upper:]' '[:lower:]'}
+          tags: ${{secret.DOCKERHUB_NAMESPACE}}/app:v1.0.${{ github.run_id }}
       
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: Build
+          path: dist
+        
     
