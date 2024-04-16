@@ -44,15 +44,15 @@ jobs:
 
       - name: Set version
         run: |
-          VERSION="prod-0.1.${{GITHUB_RUN_NUMBER}}"
+          VERSION="prod-0.1.$GITHUB_RUN_NUMBER"
 
       - name: Set image name
         run: |
           IMAGE=${{ secrets.DOCKERHUB_NAMESPACE }}/${{ env.IMAGE_NAME }}
 
       - name: Tag Docker image
-        run: docker tag ${{ env.IMAGE_NAME }} ${{IMAGE}}:${{VERSION}}
+        run: docker tag ${{ env.IMAGE_NAME }} IMAGE:VERSION
 
       - name: Push Docker image
-        run: docker push ${{IMAGE}}:${{VERSION}}
+        run: docker push IMAGE:VERSION
 
