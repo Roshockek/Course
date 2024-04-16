@@ -6,50 +6,52 @@ on:
   pull_request:
     branches: [ "main" ]
 
-jobs:
+env:
+  IMAGE_NAME: ${{ GITHUB_REPOSITORY }}
+  DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+  DOCKERHUB_PASSWORD: ${{ secrets.DOCKERHUB_PASSWORD }}
 
+jobs:
   build_deploy_run:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       
       - name: Build Docker image
         run: |
-          IMAGE_NAME=$GITHUB_REPOSITORY
-          docker build . --file Dockerfile --tag $IMAGE_NAME
+          lowercase_image_name=$(echo "${{ env.IMAGE_NAME }}" | tr '[:upper:]' '[:lower:]')
+          docker build . --file Dockerfile --tag ${{lowercase_image_name}}
       
       - name: Save Docker image
         run: |
-          IMAGE_NAME=$GITHUB_REPOSITORY
-          docker save $IMAGE_NAME --output "${IMAGE_NAME}.tar"
+          docker save $IMAGE_NAME --output "${{ env.IMAGE_NAME }}.tar"
       
       - name: Upload artifact
         uses: actions/upload-artifact@v2
         with:
           name: docker-image
-          path: "${GITHUB_REPOSITORY}.tar"
+          path: "${{ env.IMAGE_NAME }}.tar"
           
       - name: Login to Docker Hub
         run: echo ${{ secrets.DOCKERHUB_PASSWORD }} | docker login --username ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
 
       - name: Load Docker image
         run: |
-          IMAGE_NAME=$GITHUB_REPOSITORY
-          docker load --input "${IMAGE_NAME}.tar"
+          docker load --input "${{ env.IMAGE_NAME }}.tar"
 
       - name: Set version
         run: |
-          VERSION="prod-0.1.${GITHUB_RUN_NUMBER}"
+          VERSION="prod-0.1.${{GITHUB_RUN_NUMBER}}"
 
       - name: Set image name
         run: |
-          IMAGE=${{ secrets.DOCKERHUB_NAMESPACE }}/$GITHUB_REPOSITORY
+          IMAGE=${{ secrets.DOCKERHUB_NAMESPACE }}/${{ env.IMAGE_NAME }}
 
       - name: Tag Docker image
-        run: docker tag $GITHUB_REPOSITORY $IMAGE:$VERSION
+        run: docker tag ${{ env.IMAGE_NAME }} ${{IMAGE}}:${{VERSION}}
 
       - name: Push Docker image
-        run: docker push $IMAGE:$VERSION
+        run: docker push ${{IMAGE}}:${{VERSION}}
 
