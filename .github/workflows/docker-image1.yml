@@ -7,6 +7,7 @@ on:
     branches: [ "main" ]
 env:
   TAG_NAME: app
+  IMAGE_NAME: app:v1.0.$GITHUB_RUN_NUMBER
 jobs:
 
   build:
@@ -16,4 +17,12 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag $TAG_NAME:v1.0.$GITHUB_RUN_NUMBER
+      run: | 
+        docker build . --file Dockerfile --tag $IMAGE_NAME
+        docker save $IMAGE_NAME --output "$IMAGE_NAME.tar"
+
+    - name: Upload Docker image tarball as artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: docker-image
+        path: ${{ github.workspace }}/$IMAGE_NAME.tar
