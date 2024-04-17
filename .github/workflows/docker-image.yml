@@ -62,6 +62,7 @@ jobs:
           docker push "${{secrets.DOCKERHUB_USERNAME}}/${{env.IMAGE_NAME}}"
   run:
     runs-on: self-hosted
+    needs: deploy
     steps:
       - name: Setup image name
         run: echo "IMAGE_NAME=$(echo $TAG_NAME:v1.0.$GITHUB_RUN_NUMBER)" >> $GITHUB_ENV
