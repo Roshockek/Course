@@ -58,7 +58,7 @@ jobs:
       - name: Load image
         run: |
           docker load --input /tmp/docker-image.tar
-          docker tag ${{env.IMAGE_NAME}} "${{env.DOCKERHUB_USERNAME}}/${{env.IMAGE_NAME}}"
+          docker tag ${{env.IMAGE_NAME}} "${{secrets.DOCKERHUB_USERNAME}}/${{env.IMAGE_NAME}}"
           docker push "${{secrets.DOCKERHUB_USERNAME}}/${{env.IMAGE_NAME}}"
           
       
