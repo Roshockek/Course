@@ -7,7 +7,7 @@ on:
     branches: [ "main" ]
 env:
   TAG_NAME: app
-  IMAGE_NAME: app:v1.0.${{GITHUB_RUN_NUMBER}}
+
 jobs:
 
   build:
@@ -15,6 +15,9 @@ jobs:
     runs-on: ubuntu-latest
   
     steps:
+    - name: Setup image name
+      run: echo "IMAGE_NAME=$(echo $TAG_NAME:v1.0.$GITHUB_RUN_NUMBER)" >> $GITHUB_ENV
+    
     - uses: actions/checkout@v3
     - name: Build the Docker image
       run: | 
