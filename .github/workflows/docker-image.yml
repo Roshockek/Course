@@ -31,7 +31,7 @@ jobs:
         with:
           context: .
           push: true
-          tags: ${{secret.DOCKERHUB_NAMESPACE}}/app:v1.0.${{ github.run_id }}
+          tags: ${{secrets.DOCKERHUB_NAMESPACE}}/app:v1.0.${{ github.run_id }}
       
       - name: Upload artifact
         uses: actions/upload-artifact@v3
