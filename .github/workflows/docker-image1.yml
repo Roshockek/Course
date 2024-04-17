@@ -7,7 +7,7 @@ on:
     branches: [ "main" ]
 env:
   TAG_NAME: app
-  IMAGE_NAME: "app:v1.0.${GITHUB_RUN_NUMBER}"
+  IMAGE_NAME: app:v1.0.${GITHUB_RUN_NUMBER}
 jobs:
 
   build:
