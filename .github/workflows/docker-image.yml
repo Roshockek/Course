@@ -25,7 +25,7 @@ jobs:
 
       - name: Run image from Dockerhub
         run: |
-          docker run --name  ${{ github.ref_name }} -p 8081:8080 -d "roshochek/${{env.IMAGE_NAME}}"
+          docker run --name  ${{ github.ref_name }} -p 8081:8080 -d roshochek/${{env.IMAGE_NAME}}
       
           
       
