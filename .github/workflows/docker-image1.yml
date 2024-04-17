@@ -16,4 +16,4 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag ${{TAG_NAME}}:v1.0.$GITHUB_RUN_NUMBER
+      run: docker build . --file Dockerfile --tag $TAG_NAME:v1.0.$GITHUB_RUN_NUMBER
