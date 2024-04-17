@@ -7,7 +7,7 @@ on:
     branches: [ "main" ]
 
 env:
-  IMAGE_NAME: $GITHUB_REPOSITORY
+  TAG_NAME: app
   
 jobs:
   build_deploy:
@@ -16,7 +16,10 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-        
+
+      - name: Setup image name
+        run: echo "IMAGE_NAME=$(echo $TAG_NAME:v1.0.$GITHUB_RUN_NUMBER)" >> $GITHUB_ENV
+      
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@f95db51fddba0c2d1ec667646a06c2ce06100226 # v3.0.0
 
@@ -30,8 +33,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: .
-          push: true
-          tags: ${{secrets.DOCKERHUB_NAMESPACE}}/app:v1.0.${{ github.run_id }}
+          tags: $IMAGE_NUMBER
           outputs: type=docker,dest=/tmp/docker-image.tar
       
       - name: Upload artifact
@@ -39,18 +41,19 @@ jobs:
         with:
           name: docker-image
           path: /tmp/docker-image.tar
-  run:
+
+  deploy:
     runs-on: self-hosted
     needs: build_deploy
     steps:
       - name: Download artifact
         uses: actions/download-artifact@v3
         with:
-          name: myimage
+          name: docker-image
           path: /tmp
       - name: Load image
         run: |
-          docker load --input /tmp/myimage.tar
-          docker image ls -a  
+          docker load --input /tmp/docker-image.tar
+          docker push $IMAGE_NAME
       
     
