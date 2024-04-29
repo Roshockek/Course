@@ -3,7 +3,7 @@ const app = express();
 const port = 8080;
 
 app.get('/', (reg, res) => {
-  res.sendFile(__dirname + '/cicd.html);
+  res.sendFile(__dirname + '/cicd.html');
 });
 
 app.listen(port, '0.0.0.0', () => {
