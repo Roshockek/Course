@@ -2,8 +2,8 @@ const express = require('express');
 const app = express();
 const port = 8080;
 
-app.get('/', (req, res) => {
-  res.send('Привет мир!');
+app.get('/', (reg, res) => {
+  res.sendFile(__dirname + '/cicd.html');
 });
 
 app.listen(port, '0.0.0.0', () => {
